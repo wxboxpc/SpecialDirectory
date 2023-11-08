@@ -36,10 +36,10 @@
 
             return formattedCache; 
         };
-        function SetCache(a, b, c) { document.cookie = a + "," + b + "," + c; }
+        function SetCache(a, b, c) { document.cookie = a + "," + b + "," + c + ",; expires=Wed, 31 Dec 2025 23:59:59 GMT; path=/"; }
         function UpdateCache() { 
             let cache = GetCache();
-            document.cookie = cache[0] + "," + caloriesLeft + "," + cache[2];
+            document.cookie = cache[0] + "," + caloriesLeft + "," + cache[2] + ",; expires=Wed, 31 Dec 2025 23:59:59 GMT; path=/";
          };
         function UpdateResetTimer() { 
             timeRemainingForReset -= 1000; 
