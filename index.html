@@ -16,6 +16,13 @@
         let caloriesLeft = settings_targetCalories;
         let caloriesSavedSoFar = 0;
 
+        function GetFormattedTimeLeft(seconds) {
+            let hours = Math.floor(seconds / 3600);
+            let minutes = Math.floor((seconds % 3600) / 60);
+            let remainingSeconds = seconds % 60;
+
+            return `${hours} hours ${minutes} minutes ${remainingSeconds} seconds`;
+        }
         function GetCache() {
             let cache = document.cookie;
             let cacheSplit = cache.split(",");
@@ -53,7 +60,8 @@
             UpdateCache();
         }
         function Render() {
-            document.getElementsByName("label_dayResetTimer")[0].innerHTML = "Day Reset Timer: " + parseInt(timeRemainingForReset/1000);
+            let timeLeft = parseInt(timeRemainingForReset/1000);
+            document.getElementsByName("label_dayResetTimer")[0].innerHTML = "Day Reset Timer: " + GetFormattedTimeLeft(timeLeft);
             document.getElementsByName("label_caloriesSavedSoFar")[0].innerHTML = "Calories saved so far: " + caloriesSavedSoFar;
             document.getElementsByName("label_caloriesLeft")[0].innerHTML = "Calories left for today: " + caloriesLeft;
         }
