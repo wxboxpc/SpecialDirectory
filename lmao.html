@@ -1,0 +1,77 @@
+<head>
+    <title>Fake it 'til you Make it</title>
+</head>
+<body>
+    <label name="label_dayResetTimer"></label><br>
+    <label name="label_caloriesSavedSoFar"></label><br>
+    <label name="label_caloriesLeft"></label><br><br>
+    <input type="text" name="textbox_caloriesConsumed" name="fname">
+    <button name="button_consume">Consume</button>
+
+    <script>
+        //                           h * m  * s
+        let settings_resetInterval = 24 * 60 * 60 * 1000; // a day
+        let settings_targetCalories = 1400; // arbitrary number
+        let timeStarted = Date.now();
+        let caloriesLeft = settings_targetCalories;
+        let caloriesSavedSoFar = 0;
+
+        function GetCache() {
+            let cache = document.cookie;
+            let cacheSplit = cache.split(",");
+            let formattedCache = [isNaN(parseInt(cacheSplit[0])) ? Date.now(): parseInt(cacheSplit[0]), 
+                                  isNaN(parseInt(cacheSplit[1])) ? settings_targetCalories: parseInt(cacheSplit[1]),
+                                  isNaN(parseInt(cacheSplit[2])) ? 0: parseInt(cacheSplit[2])];
+
+            let timePassed = Date.now() - formattedCache[0];
+            if (timePassed > settings_resetInterval) {
+                alert("New Day!");
+                timeStarted = formattedCache[0] + settings_resetInterval;
+                caloriesLeft = settings_targetCalories;
+                caloriesSavedSoFar = formattedCache[2] + formattedCache[1];
+                SetCache(timeStarted, caloriesLeft, caloriesSavedSoFar);
+                location.reload();
+                return;
+            }
+
+            return formattedCache; 
+        };
+        function SetCache(a, b, c) { document.cookie = a + "," + b + "," + c; }
+        function UpdateCache() { 
+            let cache = GetCache();
+            document.cookie = cache[0] + "," + caloriesLeft + "," + cache[2];
+         };
+        function UpdateResetTimer() { 
+            timeRemainingForReset -= 1000; 
+            UpdateCache();
+        }
+        function ConsumeCalories() {
+            let tbox = document.getElementsByName("textbox_caloriesConsumed")[0];
+            let amount = parseInt(tbox.value);
+            tbox.value = "";
+            caloriesLeft -= isNaN(amount) ? 0: amount;
+            UpdateCache();
+        }
+        function Render() {
+            document.getElementsByName("label_dayResetTimer")[0].innerHTML = "Day Reset Timer: " + parseInt(timeRemainingForReset/1000);
+            document.getElementsByName("label_caloriesSavedSoFar")[0].innerHTML = "Calories saved so far: " + caloriesSavedSoFar;
+            document.getElementsByName("label_caloriesLeft")[0].innerHTML = "Calories left for today: " + caloriesLeft;
+        }
+
+        function Init() {
+            let cache = GetCache();
+
+            timeRemainingForReset = settings_resetInterval - Date.now() + cache[0];
+            caloriesLeft = cache[1];
+            caloriesSavedSoFar = cache[2];
+        }
+        function main() {
+            Init();
+            document.getElementsByName("button_consume")[0].onclick = ConsumeCalories;
+            setInterval(UpdateResetTimer, 1000);
+            setInterval(Render, 50);
+        }
+
+        main();
+    </script>
+</body>
